@@ -45,7 +45,7 @@ Ce guide suppose des connaissances de base en :
 # 📖 Table of Contents
 - [Séance 1 - Construire un conteneur manuellement](01-manual-container.md)
 - [Séance 2 - OCI, containerd et runc](02-oci-containerd-runc.md)
-- [Séance 3 - Container Networking and CNI](03-container-networking-cni.md)
-- [Séance 4 - Private Registry and Container Security](04-registry-and-security.md)
-- [Séance 5 - Docker and Podman](05-docker-and-podman.md)
+- [Séance 3 - Container Networking et CNI](03-container-networking-cni.md)
+- [Séance 4 - Private Registry et Container Security](04-registry-and-security.md)
+- [Séance 5 - Docker et Podman](05-docker-and-podman.md)
 - [Séance 6 - Docker Compose et orchestration locale](06-docker-compose.md)
