@@ -157,9 +157,11 @@ Pour observer les System Calls d'un processus, on peut utiliser strace sur l'hô
 ```bash
 strace -p "$PID"
 ```
+
 À observer :
 
 Le programme ne communique pas directement avec le matériel. Il passe par les interfaces fournies par le kernel, notamment les System Calls.
+
 ---
 
 # 3. Filesystem
