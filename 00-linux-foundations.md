@@ -861,7 +861,7 @@ Cela peut notamment contribuer à limiter certains comportements excessifs ou ce
 
 ---
 
-# 10.4. Limiter I/O
+## 10.4. Limiter I/O
 
 I/O signifie :
 
@@ -905,7 +905,7 @@ PIDS
 
 ---
 
-# 10.5. Résumé des Cgroups
+## 10.5. Résumé des Cgroups
 
 | Ressource | Exemple de contrôle |
 |---|---|
@@ -931,7 +931,7 @@ Le résultat est un processus Linux qui s'exécute dans un environnement isolé.
 
 ---
 
-# . Ce qu'il faut absolument retenir
+# Ce qu'il faut absolument retenir
 
 ## Kernel
 
@@ -980,164 +980,6 @@ Le résultat est un processus Linux qui s'exécute dans un environnement isolé.
 ## Cgroup
 
 > Un cgroup permet de contrôler les ressources utilisées par un groupe de processus.
-
----
-
-# 42. Les deux questions clés des conteneurs
-
-Pour retenir l'idée générale :
-
-```text
-        ┌─────────────────────────┐
-        │       NAMESPACES        │
-        │                         │
-        │ "Qu'est-ce que je vois ?"│
-        └────────────┬────────────┘
-                     │
-                     ▼
-                ISOLATION
-
-
-        ┌─────────────────────────┐
-        │        CGROUPS          │
-        │                         │
-        │ "Combien puis-je utiliser ?"│
-        └────────────┬────────────┘
-                     │
-                     ▼
-             RESOURCE CONTROL
-```
-
-Puis on ajoute :
-
-```text
-Rootfs
-   ↓
-Quel filesystem vois-je ?
-
-Network namespace
-   ↓
-Quel réseau vois-je ?
-
-Security mechanisms
-   ↓
-Qu'ai-je le droit de faire ?
-```
-
----
-
-# Préparation pour la suite
-
-Après avoir compris ces primitives Linux, nous pouvons passer à la construction manuelle d'un conteneur.
-
-La prochaine étape sera de combiner concrètement :
-
-```text
-Rootfs
-   +
-Mount Namespace
-   +
-PID Namespace
-   +
-UTS Namespace
-   +
-Network Namespace
-   +
-Cgroups
-   +
-Process
-   ↓
-Mini-conteneur
-```
-
-L'objectif du chapitre suivant sera de construire progressivement cet environnement **sans commencer directement par Docker**, afin de comprendre ce que les outils de conteneurisation automatisent réellement.
-
----
-
-# Mini-lab de découverte Linux
-
-Avant de construire un conteneur manuellement, quelques commandes permettent d'observer les mécanismes étudiés.
-
-## Observer les processus
-
-```bash
-ps aux
-```
-
-```bash
-top
-```
-
-## Observer `/proc`
-
-```bash
-ls /proc
-```
-
-```bash
-cat /proc/cpuinfo
-```
-
-```bash
-cat /proc/meminfo
-```
-
-## Observer les namespaces
-
-```bash
-ls -l /proc/$$/ns/
-```
-
-On peut notamment observer :
-
-```text
-pid
-mnt
-net
-uts
-ipc
-user
-```
-
-## Observer les informations d'un processus
-
-```bash
-cat /proc/$$/status
-```
-
-## Observer les montages
-
-```bash
-mount
-```
-
-ou :
-
-```bash
-findmnt
-```
-
-## Observer le hostname
-
-```bash
-hostname
-```
-
-## Observer les interfaces réseau
-
-```bash
-ip addr
-```
-
-## Observer les routes
-
-```bash
-ip route
-```
-
-Ces commandes permettent de relier les concepts théoriques aux mécanismes réellement présents sur Linux.
-
----
 
 # Questions de compréhension
 
@@ -1188,3 +1030,30 @@ Quel rôle joue le rootfs ?
 ### Question 12
 
 Quel est le rôle du kernel dans l'architecture d'un conteneur ?
+
+---
+# Préparation pour la suite
+
+Après avoir compris ces primitives Linux, nous pouvons passer à la construction manuelle d'un conteneur.
+
+La prochaine étape sera de combiner concrètement :
+
+```text
+Rootfs
+   +
+Mount Namespace
+   +
+PID Namespace
+   +
+UTS Namespace
+   +
+Network Namespace
+   +
+Cgroups
+   +
+Process
+   ↓
+Mini-conteneur
+```
+
+L'objectif du chapitre suivant sera de construire progressivement cet environnement **sans commencer directement par Docker**, afin de comprendre ce que les outils de conteneurisation automatisent réellement.
