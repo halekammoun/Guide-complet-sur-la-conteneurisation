@@ -72,7 +72,9 @@ PID   COMMAND
 ```
 
 Le PID permet au kernel et aux outils Linux d'identifier les processus.
+
 ---
+
 Mini-lab intégré — Observer les processus d'un conteneur
 ```bash
 docker run -d --name linux-lab nginx
@@ -195,7 +197,9 @@ La racine de cette arborescence est :
 ```text
 /
 ```
+
 ---
+
 Observer la racine du conteneur :
 
 ```bash
@@ -213,6 +217,7 @@ docker inspect --format '{{json .Mounts}}' linux-lab
 ```
 À observer :
 Le processus du conteneur voit une arborescence de fichiers qui constitue son environnement filesystem.
+
 ---
 
 # 4. Root Filesystem — `rootfs`
@@ -235,6 +240,7 @@ rootfs/
 Un conteneur n'a pas nécessairement besoin d'un système complet comme une machine virtuelle.
 
 Il peut utiliser un filesystem minimal contenant uniquement les fichiers nécessaires à son application.
+
 ---
 
 Observer la racine visible depuis le conteneur :
@@ -254,6 +260,7 @@ readlink /proc/"$PID"/root
 ```
 À observer :
 Le processus possède une vue de filesystem qui lui apparaît comme /.
+
 ---
 
 # 5. `/proc`
@@ -315,6 +322,7 @@ ls -l /proc/"$PID"/ns/pid
 
 À observer :
 /proc fournit une vue des processus et des informations du système. Cette vue sera particulièrement importante lorsque nous étudierons les namespaces.
+
 ---
 
 # 6. Mount et Bind Mount
@@ -347,7 +355,9 @@ mount --bind /source /destination
 On peut ainsi faire apparaître le même contenu à un autre endroit de l'arborescence.
 
 Les mount namespaces permettent ensuite à différents processus d'avoir des vues différentes de l'arborescence des montages.
+
 ---
+
 Créer un répertoire sur l'hôte :
 
 ```bash
@@ -378,6 +388,7 @@ docker exec linux-lab-mount findmnt
 À observer :
 
 Le même contenu présent sur l'hôte devient accessible dans le conteneur à travers /data.
+
 ---
 
 # 7. `chroot`
@@ -446,6 +457,7 @@ docker inspect linux-lab
 À retenir :
 
 chroot permet de changer la racine apparente, mais cela ne fournit pas à lui seul toutes les propriétés d'un conteneur.
+
 ---
 
 # 8. `pivot_root`
@@ -469,7 +481,9 @@ Exécuter le processus du conteneur
 ```
 
 `pivot_root` est donc plus adapté à une véritable construction d'environnement isolé que le simple changement de racine fourni par `chroot`.
+
 ---
+
 Nous allons observer le résultat final plutôt que d'exécuter directement `pivot_root`.
 
 ```bash
@@ -487,6 +501,7 @@ ls -l /proc/"$PID"/ns/mnt
 À retenir :
 
 Dans une construction réelle de conteneur, le changement de root intervient avec d'autres mécanismes Linux, notamment les mount namespaces.
+
 ---
 
 # 9. Namespaces Linux
@@ -535,7 +550,9 @@ PID 1
 ```
 
 à l'intérieur du conteneur.
+
 ---
+
 Observer les processus depuis le conteneur :
 
 ```bash
@@ -566,6 +583,7 @@ readlink /proc/"$PID"/ns/pid
 À observer :
 
 À l'intérieur du conteneur, un processus peut apparaître comme PID 1, alors que ce même processus possède un autre PID dans la vue de l'hôte.
+
 ---
 
 ## 9.2. Network Namespace
@@ -591,7 +609,9 @@ Container network namespace
 ```
 
 Les mécanismes comme `veth`, les bridges et le NAT permettent ensuite de connecter ces namespaces au réseau extérieur.
+
 ---
+
 Observer les interfaces réseau du conteneur :
 ```bash
 docker exec linux-lab ip addr
@@ -616,6 +636,7 @@ ls -l /proc/"$PID"/ns/net
 À observer :
 
 Le conteneur possède sa propre vue des interfaces réseau, des adresses IP et des routes.
+
 ---
 
 ## 9.3. Mount Namespace
@@ -647,6 +668,7 @@ Container
 C'est un mécanisme fondamental pour construire le filesystem isolé d'un conteneur.
 
 ---
+
 Observer les montages du conteneur :
 ```bash
 docker exec linux-lab findmnt
@@ -667,6 +689,7 @@ readlink /proc/"$PID"/ns/mnt
 À observer :
 
 Le processus du conteneur peut avoir une vue des montages différente de celle de l'hôte.
+
 ---
 
 ## 9.4. UTS Namespace
@@ -694,6 +717,7 @@ hostname: web-container
 Les deux environnements peuvent donc avoir des hostnames différents.
 
 ---
+
 Observer le hostname dans le conteneur :
 ```bash
 docker exec linux-lab hostname
@@ -714,6 +738,7 @@ ls -l /proc/"$PID"/ns/uts
 À observer :
 
 Le conteneur peut avoir un hostname différent de celui de l'hôte grâce au UTS namespace.
+
 ---
 
 ## 9.5. User Namespace
@@ -731,7 +756,9 @@ UID 0
 à l'intérieur d'un namespace tout en correspondant à un utilisateur non-root sur l'hôte.
 
 Cela permet de réduire les privilèges nécessaires à l'exécution de certains conteneurs.
+
 ---
+
 Observer l'identité utilisateur :
 
 ```bash
@@ -751,6 +778,7 @@ ls -l /proc/"$PID"/ns/user
 À observer :
 
 Le User Namespace permet de gérer une correspondance entre les UID/GID vus dans le namespace et ceux de l'hôte.
+
 ---
 
 ## 9.10. Résumé des Namespaces
@@ -846,6 +874,7 @@ Cela concerne notamment les opérations d'entrée/sortie vers les systèmes de s
 Les mécanismes de contrôle des ressources peuvent permettre de limiter ou organiser l'utilisation des ressources I/O.
 
 ---
+
 Nous allons créer un conteneur avec plusieurs limites de ressources :
 
 ```bash
@@ -873,7 +902,9 @@ MEM USAGE / LIMIT
 MEM %
 PIDS
 ```
+
 ---
+
 # 10.5. Résumé des Cgroups
 
 | Ressource | Exemple de contrôle |
