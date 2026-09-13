@@ -43,7 +43,7 @@ Ce guide suppose des connaissances de base en :
 ---
 
 # 📖 Table of Contents
-- [Séance 1 - Construire un conteneur manuellement](01-manual-container.md)
+- [Séance 1 - Introduction au conteneurisation et Construire un conteneur manuellement](01-manual-container.md)
 - [Séance 2 - OCI, containerd et runc](02-oci-containerd-runc.md)
 - [LAB d'évaluation 01](03-LAB-01.md)
 - [Séance 3 - Container Networking et CNI](04-container-networking-cni.md)
