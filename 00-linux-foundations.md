@@ -79,7 +79,8 @@ Le PID permet au kernel et aux outils Linux d'identifier les processus.
 
 Mini-lab intégré — Observer les processus d'un conteneur
 ```bash
-docker run -d --name linux-lab nginx
+docker run -d --name linux-lab 
+
 ```
 Vérifier qu'il fonctionne :
 ```bash
@@ -87,7 +88,7 @@ docker ps
 ```
 Observer les processus à l'intérieur du conteneur :
 ```bash
-docker exec linux-lab ps aux
+docker top linux-lab
 ```
 Récupérer le PID réel du conteneur sur l'hôte :
 ```bash
