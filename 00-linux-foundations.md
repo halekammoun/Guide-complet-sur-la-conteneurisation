@@ -376,6 +376,9 @@ docker run -d --name linux-lab-mount \
   --mount type=bind,src=/tmp/container-data,dst=/data \
   nginx
 ```
+```bash
+docker run -d --name linux-lab-mount3 -v /tmp/container-data:/data:Z nginx
+```
 Observer le fichier depuis le conteneur :
 ```bash
 docker exec linux-lab-mount cat /data/test.txt
