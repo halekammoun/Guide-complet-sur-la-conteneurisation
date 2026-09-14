@@ -2,6 +2,9 @@
 
 > **Objectif :** comprendre les mécanismes fondamentaux de Linux qui permettent aux conteneurs de fonctionner avant d'étudier leur construction et les outils comme Docker, Podman, containerd et runc.
 
+> **Idée clé :** un conteneur n'est pas une machine virtuelle. C'est
+> essentiellement un ou plusieurs processus Linux isolés et limités par
+> le noyau Linux.
 ---
 
 ## 0. Pourquoi commencer par Linux ?
@@ -143,32 +146,6 @@ Le Shell lance le programme, le programme utilise des System Calls, et le Kernel
 
 Ces appels système sont particulièrement importants pour comprendre la création et l'isolation des conteneurs.
 
----
-
-Observer le processus principal du conteneur :
-
-```bash
-docker exec linux-lab cat /proc/1/status
-```
-Inspection depuis l'hôte
-
-```bash
-PID=$(docker inspect --format '{{.State.Pid}}' linux-lab)
-cat /proc/"$PID"/status
-```
-
-On retrouve ainsi les informations du processus directement exposées par le kernel Linux.
-Pour observer les System Calls d'un processus, on peut utiliser strace sur l'hôte :
-```bash
-strace -p "$PID"
-```
-
-À observer :
-
-Le programme ne communique pas directement avec le matériel. Il passe par les interfaces fournies par le kernel, notamment les System Calls.
-
----
-
 # 3. Filesystem
 
 Un **filesystem** est le mécanisme permettant d'organiser et de gérer les fichiers et répertoires sur un système de stockage.
@@ -221,8 +198,6 @@ docker inspect --format '{{json .Mounts}}' linux-lab
 À observer :
 Le processus du conteneur voit une arborescence de fichiers qui constitue son environnement filesystem.
 
----
-
 # 4. Root Filesystem — `rootfs`
 
 Le **root filesystem**, souvent appelé `rootfs` dans le contexte des conteneurs, représente le système de fichiers visible comme racine `/` par un processus.
@@ -264,71 +239,7 @@ readlink /proc/"$PID"/root
 À observer :
 Le processus possède une vue de filesystem qui lui apparaît comme /.
 
----
-
-# 5. `/proc`
-
-Linux expose de nombreuses informations sur le kernel et les processus à travers :
-
-```text
-/proc
-```
-
-Par exemple :
-
-```bash
-ls /proc
-```
-
-On peut trouver des répertoires correspondant aux PID :
-
-```text
-/proc/1
-/proc/100
-/proc/2000
-```
-
-On trouve également des informations générales comme :
-
-```text
-/proc/cpuinfo
-/proc/meminfo
-/proc/mounts
-```
-
-Dans les conteneurs, `/proc` est particulièrement intéressant car il peut refléter la vue des processus disponible dans le namespace du conteneur.
-
----
-
-```bash
-docker exec linux-lab ls /proc
-```
-Observer les informations système :
-```bash
-docker exec linux-lab cat /proc/cpuinfo
-docker exec linux-lab cat /proc/meminfo
-docker exec linux-lab cat /proc/mounts
-```
-Observer les PID visibles :
-```bash
-docker exec linux-lab ls /proc | grep '^[0-9]'
-```
-Comparer avec l'hôte :
-```bash
-ls /proc | grep '^[0-9]' | head
-```
-Inspection
-```bash
-PID=$(docker inspect --format '{{.State.Pid}}' linux-lab)
-ls -l /proc/"$PID"/ns/pid
-```
-
-À observer :
-/proc fournit une vue des processus et des informations du système. Cette vue sera particulièrement importante lorsque nous étudierons les namespaces.
-
----
-
-# 6. Mount et Bind Mount
+# 5. Mount 
 
 
 Linux permet de monter un filesystem dans l'arborescence.
@@ -343,16 +254,6 @@ Le contenu du filesystem devient alors accessible à partir de :
 
 ```text
 /mnt
-```
-
----
-
-Un **bind mount** permet de rendre un répertoire existant accessible à un autre emplacement.
-
-Exemple :
-
-```bash
-mount --bind /source /destination
 ```
 
 On peut ainsi faire apparaître le même contenu à un autre endroit de l'arborescence.
@@ -397,7 +298,7 @@ Le même contenu présent sur l'hôte devient accessible dans le conteneur à tr
 
 ---
 
-# 7. `chroot`
+# 6. `chroot`
 
 `chroot` signifie :
 
@@ -466,7 +367,7 @@ chroot permet de changer la racine apparente, mais cela ne fournit pas à lui se
 
 ---
 
-# 8. `pivot_root`
+# 7. `pivot_root`
 
 `pivot_root()` permet de changer la racine du filesystem d'un environnement et de déplacer l'ancienne racine vers un autre emplacement.
 
@@ -488,29 +389,7 @@ Exécuter le processus du conteneur
 
 `pivot_root` est donc plus adapté à une véritable construction d'environnement isolé que le simple changement de racine fourni par `chroot`.
 
----
-
-Nous allons observer le résultat final plutôt que d'exécuter directement `pivot_root`.
-
-```bash
-docker exec linux-lab readlink /proc/1/root
-```
-Puis :
-```bash
-docker exec linux-lab ls /
-```
-Inspection
-```bash
-PID=$(docker inspect --format '{{.State.Pid}}' linux-lab)
-ls -l /proc/"$PID"/ns/mnt
-```
-À retenir :
-
-Dans une construction réelle de conteneur, le changement de root intervient avec d'autres mécanismes Linux, notamment les mount namespaces.
-
----
-
-# 9. Namespaces Linux
+# 8. Namespaces Linux
 
 Les **Linux Namespaces** permettent d'isoler la vue qu'un processus possède de certaines ressources du système.
 
@@ -521,7 +400,7 @@ Une façon simple de retenir leur rôle est :
 Les conteneurs utilisent plusieurs types de namespaces.
 
 
-## 9.1. PID Namespace
+## 8.1. PID Namespace
 
 Le **PID namespace** isole la vue des processus.
 
@@ -592,7 +471,7 @@ readlink /proc/"$PID"/ns/pid
 
 ---
 
-## 9.2. Network Namespace
+## 8.2. Network Namespace
 
 Le **Network namespace** permet d'isoler l'environnement réseau.
 
@@ -645,7 +524,7 @@ Le conteneur possède sa propre vue des interfaces réseau, des adresses IP et d
 
 ---
 
-## 9.3. Mount Namespace
+## 8.3. Mount Namespace
 
 Le **Mount namespace** permet à un processus d'avoir sa propre vue des montages.
 
@@ -673,32 +552,7 @@ Container
 
 C'est un mécanisme fondamental pour construire le filesystem isolé d'un conteneur.
 
----
-
-Observer les montages du conteneur :
-```bash
-docker exec linux-lab findmnt
-```
-Inspection
-```bash
-PID=$(docker inspect --format '{{.State.Pid}}' linux-lab)
-ls -l /proc/"$PID"/ns/mnt
-```
-Comparer avec l'hôte :
-```bash
-readlink /proc/1/ns/mnt
-```
-et :
-```bash
-readlink /proc/"$PID"/ns/mnt
-```
-À observer :
-
-Le processus du conteneur peut avoir une vue des montages différente de celle de l'hôte.
-
----
-
-## 9.4. UTS Namespace
+## 8.4. UTS Namespace
 
 Le **UTS namespace** permet notamment d'isoler le hostname.
 
@@ -736,18 +590,13 @@ Inspection
 ```bash
 docker inspect --format '{{.Config.Hostname}}' linux-lab
 ```
-Puis :
-```bash
-PID=$(docker inspect --format '{{.State.Pid}}' linux-lab)
-ls -l /proc/"$PID"/ns/uts
-```
 À observer :
 
 Le conteneur peut avoir un hostname différent de celui de l'hôte grâce au UTS namespace.
 
 ---
 
-## 9.5. User Namespace
+## 8.5. User Namespace
 
 Le **User namespace** permet d'isoler les identifiants utilisateurs et groupes.
 
@@ -762,32 +611,9 @@ UID 0
 à l'intérieur d'un namespace tout en correspondant à un utilisateur non-root sur l'hôte.
 
 Cela permet de réduire les privilèges nécessaires à l'exécution de certains conteneurs.
-
 ---
 
-Observer l'identité utilisateur :
-
-```bash
-docker exec linux-lab id
-```
-Puis :
-```bash
-docker exec linux-lab cat /proc/1/uid_map
-docker exec linux-lab cat /proc/1/gid_map
-```
-Inspection
-```bash
-PID=$(docker inspect --format '{{.State.Pid}}' linux-lab)
-ls -l /proc/"$PID"/ns/user
-```
-
-À observer :
-
-Le User Namespace permet de gérer une correspondance entre les UID/GID vus dans le namespace et ceux de l'hôte.
-
----
-
-## 9.10. Résumé des Namespaces
+## 8.10. Résumé des Namespaces
 
 | Namespace | Ce qu'il isole principalement | Question à retenir |
 |---|---|---|
@@ -1005,35 +831,32 @@ Que fait `fork()` ?
 
 Pourquoi `fork()` seul ne suffit-il pas à créer un conteneur ?
 
+
 ### Question 5
-
-Quelle est la différence entre `fork()` et `clone()` ?
-
-### Question 6
 
 À quoi sert un PID namespace ?
 
-### Question 7
+### Question 6
 
 À quoi sert un Network namespace ?
 
-### Question 8
+### Question 7
 
 À quoi sert un Mount namespace ?
 
-### Question 9
+### Question 8
 
 Quelle est la différence entre un Namespace et un Cgroup ?
 
-### Question 10
+### Question 9
 
 Pourquoi `chroot` seul n'est-il pas équivalent à un conteneur ?
 
-### Question 11
+### Question 10
 
 Quel rôle joue le rootfs ?
 
-### Question 12
+### Question 11
 
 Quel est le rôle du kernel dans l'architecture d'un conteneur ?
 
