@@ -32,7 +32,7 @@ Un **processus** est simplement un programme en cours d'exécution.
 Par exemple :
 
 ```bash
-sleep 100
+sleep 100 &
 ```
 
 Lorsque cette commande s'exécute, Linux crée un processus correspondant au programme `sleep`.
@@ -70,7 +70,9 @@ PID   COMMAND
 2450  bash
 3100  nginx
 ```
-
+```bash
+top -p PID
+```
 Le PID permet au kernel et aux outils Linux d'identifier les processus.
 
 ---
