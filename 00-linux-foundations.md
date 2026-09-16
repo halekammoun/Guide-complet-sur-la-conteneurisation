@@ -80,7 +80,7 @@ Le PID permet au kernel et aux outils Linux d'identifier les processus.
 
 ---
 
-Mini-lab intégré — Observer les processus d'un conteneur
+#### Observer les processus d'un conteneur
 ```bash
 docker run -d --name linux-lab nginx
 
@@ -93,7 +93,17 @@ Observer les processus à l'intérieur du conteneur :
 ```bash
 docker top linux-lab
 ```
+Docker stocke les métadonnées du conteneur dans son répertoire de données, généralement :
+```bash
+/var/lib/docker/containers/<CONTAINER_ID>/
+```
+Tu peux trouver le fichier :
+```bash
+config.v2.json
+```
+
 Récupérer le PID réel du conteneur sur l'hôte :
+
 ```bash
 docker inspect --format '{{.State.Pid}}' linux-lab
 ```
@@ -195,7 +205,6 @@ Inspection
 ```bash
 docker inspect --format '{{json .Mounts}}' linux-lab
 ```
-À observer :
 Le processus du conteneur voit une arborescence de fichiers qui constitue son environnement filesystem.
 
 # 4. Root Filesystem — `rootfs`
@@ -219,26 +228,6 @@ Un conteneur n'a pas nécessairement besoin d'un système complet comme une mach
 
 Il peut utiliser un filesystem minimal contenant uniquement les fichiers nécessaires à son application.
 
----
-
-Observer la racine visible depuis le conteneur :
-
-```bash
-docker exec linux-lab sh -c 'pwd; ls -la /'
-```
-Observer la racine du processus principal :
-```bash
-docker exec linux-lab readlink /proc/1/root
-```
-
-Inspection depuis l'hôte
-```bash
-PID=$(docker inspect --format '{{.State.Pid}}' linux-lab)
-readlink /proc/"$PID"/root
-```
-À observer :
-Le processus possède une vue de filesystem qui lui apparaît comme /.
-
 # 5. Mount 
 
 
@@ -259,9 +248,11 @@ Le contenu du filesystem devient alors accessible à partir de :
 On peut ainsi faire apparaître le même contenu à un autre endroit de l'arborescence.
 
 Les mount namespaces permettent ensuite à différents processus d'avoir des vues différentes de l'arborescence des montages.
-
----
-
+#### observer les mounts faites automatiquement pat le conteneur 
+```bash
+df -h
+```
+#### Les runtimes de conteneurs, comme Docker, permettent également de monter des systèmes de fichiers ou des répertoires provenant de l’extérieur du système de fichiers du conteneur, notamment depuis le système hôte.
 Créer un répertoire sur l'hôte :
 
 ```bash
@@ -292,8 +283,6 @@ Puis :
 ```bash
 docker exec linux-lab-mount findmnt
 ```
-À observer :
-
 Le même contenu présent sur l'hôte devient accessible dans le conteneur à travers /data.
 
 ---
@@ -361,8 +350,6 @@ Inspection
 ```bash
 docker inspect linux-lab
 ```
-À retenir :
-
 chroot permet de changer la racine apparente, mais cela ne fournit pas à lui seul toutes les propriétés d'un conteneur.
 
 ---
@@ -436,41 +423,6 @@ PID 1
 
 à l'intérieur du conteneur.
 
----
-
-Observer les processus depuis le conteneur :
-
-```bash
-docker exec linux-lab ps -ef
-```
-Observer le processus PID 1 :
-```bash
-docker exec linux-lab ps -p 1 -f
-```
-Inspection depuis l'hôte
-```bash
-PID=$(docker inspect --format '{{.State.Pid}}' linux-lab)
-
-echo "PID sur l'hôte : $PID"
-```
-Puis :
-```bash
-ls -l /proc/"$PID"/ns/pid
-```
-Comparer :
-```bash
-docker exec linux-lab readlink /proc/1/ns/pid
-```
-avec :
-```bash
-readlink /proc/"$PID"/ns/pid
-```
-À observer :
-
-À l'intérieur du conteneur, un processus peut apparaître comme PID 1, alors que ce même processus possède un autre PID dans la vue de l'hôte.
-
----
-
 ## 8.2. Network Namespace
 
 Le **Network namespace** permet d'isoler l'environnement réseau.
@@ -495,31 +447,33 @@ Container network namespace
 
 Les mécanismes comme `veth`, les bridges et le NAT permettent ensuite de connecter ces namespaces au réseau extérieur.
 
----
-
-Observer les interfaces réseau du conteneur :
+#### Observer les interfaces réseau du conteneur :
 ```bash
-docker exec linux-lab ip addr
+
+docker run -d --name mon_reseau nicolaka/netshoot sleep infinity
 ```
+```bash
+
+docker exec -it mon_reseau ip a
+```
+
 Observer les routes :
 ```bash
-docker exec linux-lab ip route
+docker exec mon_reseau ip route
 ```
 Inspection avec Docker
 ```bash
-docker inspect --format '{{json .NetworkSettings}}' linux-lab
+docker inspect --format '{{json .NetworkSettings}}' mon_reseau
 ```
 Afficher directement l'IP :
 ```bash
-docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' linux-lab
+docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mon_reseau
 ```
 Inspection du namespace
 ```bash
-PID=$(docker inspect --format '{{.State.Pid}}' linux-lab)
+PID=$(docker inspect --format '{{.State.Pid}}' mon_reseau)
 ls -l /proc/"$PID"/ns/net
 ```
-À observer :
-
 Le conteneur possède sa propre vue des interfaces réseau, des adresses IP et des routes.
 
 ---
@@ -576,9 +530,7 @@ hostname: web-container
 
 Les deux environnements peuvent donc avoir des hostnames différents.
 
----
-
-Observer le hostname dans le conteneur :
+#### Observer le hostname dans le conteneur :
 ```bash
 docker exec linux-lab hostname
 ```
@@ -590,8 +542,6 @@ Inspection
 ```bash
 docker inspect --format '{{.Config.Hostname}}' linux-lab
 ```
-À observer :
-
 Le conteneur peut avoir un hostname différent de celui de l'hôte grâce au UTS namespace.
 
 ---
@@ -691,6 +641,9 @@ Container
 
 Cela peut notamment contribuer à limiter certains comportements excessifs ou certaines attaques de type fork bomb.
 
+Une attaque fork bomb (ou bombe fork) est un type d'attaque par déni de service (DoS) qui consiste à forcer un système informatique à dupliquer un processus de manière récursive et infinie pour saturer ses ressources. [1] (https://en.wikipedia.org/wiki/Fork_bomb), [2] (https://fr.wikipedia.org/wiki/Fork_bomb)
+
+<img src="images/fork.png" alt="Arch">
 ---
 
 ## 10.4. Limiter I/O
@@ -706,7 +659,10 @@ Cela concerne notamment les opérations d'entrée/sortie vers les systèmes de s
 Les mécanismes de contrôle des ressources peuvent permettre de limiter ou organiser l'utilisation des ressources I/O.
 
 ---
+#### Limitation des ressources avec le runtime Docker
+Les cgroups (Control Groups) permettent à Linux de contrôler et de limiter les ressources utilisées par les processus. Les runtimes de conteneurs comme Docker s'appuient sur les cgroups pour appliquer ces limitations directement aux conteneurs.
 
+Docker fournit des options permettant de définir ces limites lors de la création ou de l'exécution d'un conteneur, sans avoir à manipuler directement les cgroups.
 Nous allons créer un conteneur avec plusieurs limites de ressources :
 
 ```bash
@@ -719,8 +675,7 @@ docker run -d \
 ```
 Inspection des limites
 ```bash
-docker inspect --format \
-'Memory={{.HostConfig.Memory}} | NanoCPUs={{.HostConfig.NanoCpus}} | PidsLimit={{.HostConfig.PidsLimit}}' \
+docker inspect --format 'Memory={{.HostConfig.Memory}} | NanoCPUs={{.HostConfig.NanoCpus}} | PidsLimit={{.HostConfig.PidsLimit}}'
 linux-lab-limited
 ```
 Observer le conteneur en fonctionnement
