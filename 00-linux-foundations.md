@@ -333,26 +333,6 @@ Processus
    │
    └── voit /my-rootfs comme /
 ```
----
-
-Observer la racine du processus principal du conteneur :
-
-```bash
-PID=$(docker inspect --format '{{.State.Pid}}' linux-lab)
-readlink /proc/"$PID"/root
-```
-Puis comparer avec la vue depuis le conteneur :
-```bash
-docker exec linux-lab pwd
-docker exec linux-lab ls /
-```
-Inspection
-```bash
-docker inspect linux-lab
-```
-chroot permet de changer la racine apparente, mais cela ne fournit pas à lui seul toutes les propriétés d'un conteneur.
-
----
 
 # 7. `pivot_root`
 
