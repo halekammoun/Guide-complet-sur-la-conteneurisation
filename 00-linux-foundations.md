@@ -696,7 +696,12 @@ la logique générale est beaucoup plus complexe, mais on peut la simplifier ain
 
 Le résultat est un processus Linux qui s'exécute dans un environnement isolé.
 
+Maintenant on comprend réellement la différence entre conteneurisation et virtualisation et que un conteneur partage la meme OS principale
+
+<img src="images/vm-vs-container.png" alt="Architecture du kernel Linux">
+
 ---
+
 
 # Ce qu'il faut absolument retenir
 
