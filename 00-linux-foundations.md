@@ -1,10 +1,8 @@
 # 00 — Linux Foundations for Containerization
 
-> **Objectif :** comprendre les mécanismes fondamentaux de Linux qui permettent aux conteneurs de fonctionner avant d'étudier leur construction et les outils comme Docker, Podman, containerd et runc.
+> **Objectif :** comprendre les mécanismes fondamentaux de Linux qui permettent aux conteneurs de fonctionner avant d'étudier leur construction.
 
-> **Idée clé :** un conteneur n'est pas une machine virtuelle. C'est
-> essentiellement un ou plusieurs processus Linux isolés et limités par
-> le noyau Linux.
+> **Idée clé :** un conteneur n'est pas une machine virtuelle. C'est essentiellement un processus essentielle contenant plusieurs processus Linux isolés (à l'aide des namespaces) et limités  (à l'aide des Cgroups) par le noyau Linux.
 ---
 
 ## 0. Pourquoi commencer par Linux ?
@@ -200,14 +198,15 @@ docker exec linux-lab ls /etc
 docker exec linux-lab ls /usr
 docker exec linux-lab ls /var
 ```
-Inspection
-
-```bash
-docker inspect --format '{{json .Mounts}}' linux-lab
-```
 Le processus du conteneur voit une arborescence de fichiers qui constitue son environnement filesystem.
 
-# 4. Root Filesystem — `rootfs`
+inspection
+```bash
+df -h 
+```
+on voit un montage créé et utilisé automatiquement par docker, il s'agit de son filesystem
+
+# 4. Root Filesystem: `rootfs`
 
 Le **root filesystem**, souvent appelé `rootfs` dans le contexte des conteneurs, représente le système de fichiers visible comme racine `/` par un processus.
 
@@ -356,7 +355,7 @@ Exécuter le processus du conteneur
 
 `pivot_root` est donc plus adapté à une véritable construction d'environnement isolé que le simple changement de racine fourni par `chroot`.
 
-# 8. Namespaces Linux
+# 8. les Namespaces Linux
 
 Les **Linux Namespaces** permettent d'isoler la vue qu'un processus possède de certaines ressources du système.
 
@@ -414,16 +413,6 @@ Il peut isoler notamment :
 - routes ;
 - tables de routage ;
 - ports.
-
-Conceptuellement :
-
-```text
-Host network namespace
-        │
-        │ isolé
-        ▼
-Container network namespace
-```
 
 Les mécanismes comme `veth`, les bridges et le NAT permettent ensuite de connecter ces namespaces au réseau extérieur.
 
@@ -484,7 +473,7 @@ Container
 └── tmp
 ```
 
-C'est un mécanisme fondamental pour construire le filesystem isolé d'un conteneur.
+C'est un mécanisme fondamental pour construire le *filesystem* isolé d'un conteneur.
 
 ## 8.4. UTS Namespace
 
@@ -522,7 +511,8 @@ Inspection
 ```bash
 docker inspect --format '{{.Config.Hostname}}' linux-lab
 ```
-Le conteneur peut avoir un hostname différent de celui de l'hôte grâce au UTS namespace.
+Généralement le hostname par défaut du conteneur est son id.
+Donc le conteneur peut avoir un hostname différent de celui de l'hôte grâce au UTS namespace.
 
 ---
 
@@ -588,8 +578,6 @@ Container B → limite CPU
 Container C → limite CPU
 ```
 
-
-
 ## 10.2. Mémoire
 
 La mémoire RAM est utilisée pour conserver les données et programmes nécessaires à leur exécution.
@@ -599,9 +587,7 @@ Un conteneur peut être soumis à une limite mémoire.
 Par exemple :
 
 ```text
-Container
-   │
-   └── Memory limit = 512 MB
+Memory limit = 512 MB
 ```
 
 Cela permet d'empêcher un processus ou un groupe de processus de consommer une quantité illimitée de mémoire.
@@ -614,9 +600,7 @@ Les cgroups peuvent également limiter le nombre de processus qu'un groupe peut 
 Exemple conceptuel :
 
 ```text
-Container
-   │
-   └── PID limit = 100
+PID limit = 100
 ```
 
 Cela peut notamment contribuer à limiter certains comportements excessifs ou certaines attaques de type fork bomb.
@@ -626,32 +610,15 @@ Une attaque fork bomb (ou bombe fork) est un type d'attaque par déni de service
 <img src="images/fork.png" alt="Arch">
 ---
 
-## 10.4. Limiter I/O
+#### Exemple comment Docker utilise Cgroup pour limiter les ressources d'un conteneur
 
-I/O signifie :
-
-```text
-Input / Output
-```
-
-Cela concerne notamment les opérations d'entrée/sortie vers les systèmes de stockage.
-
-Les mécanismes de contrôle des ressources peuvent permettre de limiter ou organiser l'utilisation des ressources I/O.
-
----
-#### Limitation des ressources avec le runtime Docker
 Les cgroups (Control Groups) permettent à Linux de contrôler et de limiter les ressources utilisées par les processus. Les runtimes de conteneurs comme Docker s'appuient sur les cgroups pour appliquer ces limitations directement aux conteneurs.
 
 Docker fournit des options permettant de définir ces limites lors de la création ou de l'exécution d'un conteneur, sans avoir à manipuler directement les cgroups.
 Nous allons créer un conteneur avec plusieurs limites de ressources :
 
 ```bash
-docker run -d \
-  --name linux-lab-limited \
-  --memory=128m \
-  --cpus=0.5 \
-  --pids-limit=50 \
-  nginx
+docker run -d --name linux-lab-limited --memory=128m --cpus=0.5 --pids-limit=50 nginx
 ```
 Inspection des limites
 ```bash
@@ -679,8 +646,6 @@ PIDS
 | **CPU** | Limiter ou pondérer l'utilisation CPU |
 | **Mémoire** | Définir une limite mémoire |
 | **PIDs** | Limiter le nombre de processus |
-| **I/O** | Contrôler les entrées/sorties |
-
 
 # 11. Exemple complet : lancement d'un conteneur
 
@@ -724,10 +689,6 @@ Maintenant on comprend réellement la différence entre conteneurisation et virt
 ## `fork()`
 
 > `fork()` permet de créer un nouveau processus. Il ne constitue pas à lui seul un mécanisme d'isolation de conteneur.
-
-## `clone()`
-
-> `clone()` / `clone3()` permettent de créer un processus avec un contrôle plus fin, notamment utile pour mettre en place des namespaces.
 
 ## Filesystem
 
@@ -810,13 +771,7 @@ La prochaine étape sera de combiner concrètement :
 ```text
 Rootfs
    +
-Mount Namespace
-   +
-PID Namespace
-   +
-UTS Namespace
-   +
-Network Namespace
+Namespaces
    +
 Cgroups
    +
@@ -824,5 +779,5 @@ Process
    ↓
 Mini-conteneur
 ```
-
-L'objectif du chapitre suivant sera de construire progressivement cet environnement **sans commencer directement par Docker**, afin de comprendre ce que les outils de conteneurisation automatisent réellement.
+L'objectif du lab suivant sera de construire progressivement cet environnement **sans commencer directement par Docker**, afin de comprendre ce que les outils de conteneurisation automatisent réellement.
+[Cliquez ici pour ouvrir le lab](TPs/TP01.md## lab 1 Guidé: construction manuelle d'un conteneur)
