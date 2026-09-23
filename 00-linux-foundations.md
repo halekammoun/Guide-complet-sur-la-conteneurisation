@@ -773,4 +773,4 @@ Rootfs + Namespaces + Cgroups + Process = Mini-conteneur
 ```
 L'objectif du lab suivant sera de construire progressivement cet environnement **sans commencer directement par Docker**, afin de comprendre ce que les outils de conteneurisation automatisent réellement.
 
-[Cliquez ici pour ouvrir le lab](TPs/TP01.md)
+[Cliquez ici pour ouvrir le lab](TPs/TP-01.md)
