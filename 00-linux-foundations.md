@@ -1,4 +1,4 @@
-# 00 — Linux Foundations for Containerization
+# 00 — Introduction au conteneurisation & Construire un conteneur manuellement
 
 > **Objectif :** comprendre les mécanismes fondamentaux de Linux qui permettent aux conteneurs de fonctionner avant d'étudier leur construction.
 

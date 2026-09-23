@@ -42,8 +42,8 @@ Ce guide suppose des connaissances de base en :
 
 ---
 
-# 📖 Table of Contents
-- [Séance 1 - Introduction au conteneurisation et Construire un conteneur manuellement](00-linux-foundations.md)
+# 📖 Sommaire
+- [Séance 1 - Introduction au conteneurisation & Construire un conteneur manuellement](00-linux-foundations.md)
 - [Séance 2 - OCI, containerd et runc](01-Container-runtime-et-OCI.md)
 - [LAB d'évaluation 01](TP-01.md)
 - [Séance 3 - Container Networking et CNI](02-container-networking-cni.md)
