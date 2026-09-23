@@ -608,6 +608,7 @@ Cela peut notamment contribuer à limiter certains comportements excessifs ou ce
 Une attaque fork bomb (ou bombe fork) est un type d'attaque par déni de service (DoS) qui consiste à forcer un système informatique à dupliquer un processus de manière récursive et infinie pour saturer ses ressources. [1] (https://en.wikipedia.org/wiki/Fork_bomb), [2] (https://fr.wikipedia.org/wiki/Fork_bomb)
 
 <img src="images/fork.png" alt="Arch">
+
 ---
 
 #### Exemple comment Docker utilise Cgroup pour limiter les ressources d'un conteneur
