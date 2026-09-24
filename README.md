@@ -44,8 +44,8 @@ Ce guide suppose des connaissances de base en :
 
 # 📖 Sommaire
 - [Chapitre 00 - Introduction au conteneurisation & Construire un conteneur manuellement](00-linux-foundations.md)
-- [Chapitre 01 - OCI et runtimes](01-Container-runtime-et-OCI.md)
-- [Chapitre 02 - Container Networking et CNI](02-container-networking-cni.md)
-- [Chapitre 03 - Private Registry et Container Security](03-registry-and-security.md)
-- [Chapitre 04 - Docker](04-docker-and-podman.md)
-- [Chapitre 05 - Podman](05-docker-compose.md)
+- [Chapitre 01 - OCI & runtimes](01-Container-runtime-et-OCI.md)
+- [Chapitre 02 - Réseaux des conteneurs & CNI](02-container-networking-cni.md)
+- [Chapitre 03 - Docker](04-docker-and-podman.md)
+- [Chapitre 04 - Podman](05-docker-compose.md)
+- [Chapitre 05 - Sécurisation des conteneurs & Registre privé](03-registry-and-security.md)
