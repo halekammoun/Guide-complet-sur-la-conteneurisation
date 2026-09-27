@@ -143,7 +143,9 @@ en un conteneur réellement exécuté par le **kernel Linux**.
 
 L'architecture simplifiée est la suivante :
 
+<p align="center">
 <img src=images/arch-docker.jpg >
+</p>
 
 Chaque composant possède une responsabilité différente.
 
@@ -191,9 +193,9 @@ Il gère notamment :
 à travers une API gRPC.
 
 Lorsque dockerd doit démarrer un conteneur, il délègue cette opération à containerd. À partir de ce moment, le daemon Docker se retire en grande partie du chemin d'exécution.
-
+<p align="center">
 <img src=images/containerd.jpg>
-
+</p>
 En 2017, Docker a donné containerd à la Cloud Native Computing Foundation (CNCF) en tant que projet indépendant. Aujourd'hui, Kubernetes communique avec containerd et d'autres runtimes compatibles avec CRI, plutôt qu'avec Docker.
 Cette évolution a profondément changé l'écosystème des conteneurs.
 Docker est resté une plateforme destinée aux développeurs, tandis que containerd est devenu un runtime utilisé sous les plateformes d'orchestration.
@@ -214,9 +216,9 @@ Il lit la configuration du conteneur et crée notamment :
 - les cgroups.
 Il configure ensuite le système de fichiers et démarre le processus du conteneur.
 C'est à ce niveau que le conteneur cesse d'être simplement un objet géré par Docker et devient concrètement un processus Linux. Le kernel applique alors les mécanismes d'isolation du processus.
-
-<img src=images/runc.jpg>
-
+<p align="center">
+<img src=images/runc.jpg width=500>
+</p>
 ### 5.6. Linux Kernel
 
 Le **kernel Linux** fournit les mécanismes fondamentaux utilisés pour isoler et contrôler les processus :
