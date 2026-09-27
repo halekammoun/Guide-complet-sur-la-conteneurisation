@@ -409,7 +409,9 @@ C'est là qu'intervient l'**OCI**.
 
 C'est un ensemble de **spécifications communes**.
 
-<img src=images/oci.png width=200 >
+<p align="center">
+  <img src="images/oci.png" width="200" alt="OCI">
+</p>
 
 ## 8.2. Les principales spécifications OCI
 
