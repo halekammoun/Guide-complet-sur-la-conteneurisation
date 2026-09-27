@@ -194,7 +194,7 @@ Il gère notamment :
 
 Lorsque dockerd doit démarrer un conteneur, il délègue cette opération à containerd. À partir de ce moment, le daemon Docker se retire en grande partie du chemin d'exécution.
 <p align="center">
-<img src=images/containerd.jpg>
+<img src=images/containerd.jpg width=600>
 </p>
 En 2017, Docker a donné containerd à la Cloud Native Computing Foundation (CNCF) en tant que projet indépendant. Aujourd'hui, Kubernetes communique avec containerd et d'autres runtimes compatibles avec CRI, plutôt qu'avec Docker.
 Cette évolution a profondément changé l'écosystème des conteneurs.
@@ -217,7 +217,7 @@ Il lit la configuration du conteneur et crée notamment :
 Il configure ensuite le système de fichiers et démarre le processus du conteneur.
 C'est à ce niveau que le conteneur cesse d'être simplement un objet géré par Docker et devient concrètement un processus Linux. Le kernel applique alors les mécanismes d'isolation du processus.
 <p align="center">
-<img src=images/runc.jpg width=500>
+<img src=images/runc.jpg width=600>
 </p>
 ### 5.6. Linux Kernel
 
