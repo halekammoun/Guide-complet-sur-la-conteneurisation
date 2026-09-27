@@ -417,7 +417,7 @@ C'est un ensemble de **spécifications communes**.
 
 Les trois spécifications principales à connaître sont :
 
-<img src=images/oci-standard.png>
+<img src=images/oci-standard.png width=500>
 
 voir documentation officielle: https://specs.opencontainers.org/
 
