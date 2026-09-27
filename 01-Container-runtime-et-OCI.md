@@ -145,7 +145,7 @@ L'architecture simplifiée est la suivante :
 
 Chaque composant possède une responsabilité différente.
 
-### Docker CLI
+### 5.1. Docker CLI
 
 Le **Docker CLI** est l'interface utilisée par l'utilisateur :
 
@@ -159,7 +159,7 @@ docker stop
 
 Il envoie les demandes au daemon Docker.
 
-### dockerd
+### 5.2. dockerd
 
 `dockerd` est le **daemon Docker**.
 
@@ -175,7 +175,7 @@ Il coordonne notamment :
 
 > **À retenir : `dockerd` est le daemon Docker, ce n'est pas le runtime OCI qui crée directement le processus du conteneur.**
 
-### containerd
+### 5.3. containerd
 
 `containerd` est un composant spécialisé dans la **gestion du cycle de vie des conteneurs**.
 
@@ -188,7 +188,7 @@ Il prend en charge notamment :
 
 Il délègue ensuite l'exécution bas niveau à un runtime OCI tel que `runc`.
 
-### containerd-shim
+### 5.4. containerd-shim
 
 Le `containerd-shim-runc-v2` sert d'intermédiaire entre `containerd` et le processus du conteneur.
 
@@ -206,7 +206,7 @@ containerd-shim
 runc
 ```
 
-### runc
+### 5.5. runc
 
 `runc` est un **runtime OCI de bas niveau**.
 
@@ -224,7 +224,7 @@ Il configure notamment :
 
 C'est donc à ce niveau que les mécanismes étudiés dans le chapitre précédent sont réellement mis en place.
 
-### Linux Kernel
+### 5.6. Linux Kernel
 
 Le **kernel Linux** fournit les mécanismes fondamentaux utilisés pour isoler et contrôler les processus :
 
@@ -260,7 +260,7 @@ Une représentation simplifiée est :
 
 <img src=images/arch-podman.png>
 
-### Podman CLI
+### 6.1. Podman CLI
 
 Le **Podman CLI** est l'interface utilisée par l'utilisateur :
 
@@ -274,7 +274,7 @@ podman stop
 
 Contrairement à Docker, la commande `podman` ne nécessite pas de communiquer avec un daemon central permanent.
 
-### Podman
+### 6.2. Podman
 
 Podman assure directement la gestion des opérations liées aux conteneurs.
 
@@ -299,7 +299,7 @@ OCI Runtime
 Linux Kernel
 ```
 
-### conmon
+### 6.3. conmon
 
 **conmon** est utilisé par Podman pour surveiller les processus des conteneurs.
 
@@ -325,7 +325,7 @@ runc / crun
 Linux Kernel
 ```
 
-### runc ou crun
+### 6.4. runc ou crun
 
 Podman peut utiliser différents **OCI runtimes**.
 
@@ -338,7 +338,7 @@ crun
 
 Ces runtimes ont pour rôle d'exécuter réellement le processus du conteneur en utilisant les mécanismes du kernel Linux.
 
-### Rootless
+### 6.5. Rootless
 
 Une caractéristique importante de Podman est sa capacité à fonctionner en **rootless**.
 
