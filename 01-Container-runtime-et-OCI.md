@@ -219,6 +219,7 @@ C'est à ce niveau que le conteneur cesse d'être simplement un objet géré par
 <p align="center">
 <img src=images/runc.jpg width=600>
 </p>
+
 ### 5.6. Linux Kernel
 
 Le **kernel Linux** fournit les mécanismes fondamentaux utilisés pour isoler et contrôler les processus :
