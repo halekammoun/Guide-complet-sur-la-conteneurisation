@@ -149,8 +149,8 @@ Chaque composant possède une responsabilité différente.
 
 ### 5.1. Docker CLI
 
-Le **Docker CLI** est l'interface utilisée par l'utilisateur :
-
+Le Docker CLI est un client léger (thin client).
+Lorsque vous tapez :
 ```bash
 docker run
 docker ps
@@ -158,73 +158,64 @@ docker build
 docker pull
 docker stop
 ```
+il transforme votre commande en une requête API et l'envoie via :
+```bash
+/var/run/docker.sock
+```
 
-Il envoie les demandes au daemon Docker.
+au Docker daemon.
+Le CLI lui-même ne construit pas les images, ne télécharge pas les layers et ne démarre pas les conteneurs. Il se contente de transmettre les requêtes.
+Le véritable travail est effectué par les composants situés derrière le CLI.
+Cette séparation est importante car le CLI et le daemon n'ont même pas besoin d'être exécutés sur la même machine. Docker peut exposer son API à distance, permettant ainsi à des outils externes et à des systèmes d'automatisation de communiquer directement avec le daemon.
 
 ### 5.2. dockerd
 
 `dockerd` est le **daemon Docker**.
 
-Il constitue le point central de gestion de Docker et reçoit les requêtes provenant du Docker CLI.
+Il reçoit les requêtes provenant du CLI et gère les images, les réseaux, les volumes et l'ensemble de l'API Docker. Cependant, dockerd n'exécute pas directement les conteneurs. Il délègue plutôt la gestion du cycle de vie des conteneurs à containerd.
+Cette séparation permet aux conteneurs de continuer à fonctionner même si le daemon Docker 
+redémarre.
 
-Il coordonne notamment :
+La couche runtime peut ainsi fonctionner indépendamment de la couche d'API Docker de niveau supérieur.
 
-- les conteneurs ;
-- les images ;
-- les réseaux ;
-- les volumes ;
-- les opérations demandées par l'utilisateur.
-
-> **À retenir : `dockerd` est le daemon Docker, ce n'est pas le runtime OCI qui crée directement le processus du conteneur.**
 
 ### 5.3. containerd
 
 `containerd` est un composant spécialisé dans la **gestion du cycle de vie des conteneurs**.
 
-Il prend en charge notamment :
-
+Il gère notamment :
 - la gestion des images ;
 - la création et la gestion des conteneurs ;
 - la gestion des tâches (processus des conteneurs) ;
 - la communication avec le runtime OCI.
+à travers une API gRPC.
 
-Il délègue ensuite l'exécution bas niveau à un runtime OCI tel que `runc`.
+Lorsque dockerd doit démarrer un conteneur, il délègue cette opération à containerd. À partir de ce moment, le daemon Docker se retire en grande partie du chemin d'exécution.
+
+<img src=images/containerd.jpg>
+
+En 2017, Docker a donné containerd à la Cloud Native Computing Foundation (CNCF) en tant que projet indépendant. Aujourd'hui, Kubernetes communique avec containerd et d'autres runtimes compatibles avec CRI, plutôt qu'avec Docker.
+Cette évolution a profondément changé l'écosystème des conteneurs.
+Docker est resté une plateforme destinée aux développeurs, tandis que containerd est devenu un runtime utilisé sous les plateformes d'orchestration.
+Cependant, containerd ne crée pas directement les conteneurs. Il transmet cette responsabilité au composant situé plus bas dans la pile.
 
 ### 5.4. containerd-shim
 
-Le `containerd-shim-runc-v2` sert d'intermédiaire entre `containerd` et le processus du conteneur.
+Le containerd-shim est un processus léger situé entre containerd et le conteneur en cours d'exécution.
+Avant qu'un conteneur ne démarre, containerd lance d'abord un processus shim. Le shim devient le parent du processus du conteneur et permet au conteneur de continuer à fonctionner même si containerd rencontre un problème ou redémarre.
+Chaque conteneur possède son propre shim.
 
-Il permet notamment à `containerd` de gérer les conteneurs et leurs processus sans avoir à rester directement attaché à chaque processus exécuté.
-
-On peut donc simplifier son rôle comme :
-
-```text
-containerd
-    │
-    ▼
-containerd-shim
-    │
-    ▼
-runc
-```
 
 ### 5.5. runc
 
-`runc` est un **runtime OCI de bas niveau**.
-
-C'est lui qui utilise les mécanismes du système Linux pour créer et exécuter le processus du conteneur.
-
-Il configure notamment :
-
+runc est le runtime OCI (Open Container Initiative) qui interagit directement avec le kernel Linux pour créer le conteneur.
+Il lit la configuration du conteneur et crée notamment :
 - les namespaces ;
-- les cgroups ;
-- les mounts ;
-- le root filesystem ;
-- les capabilities ;
-- les paramètres de sécurité ;
-- le processus à exécuter.
+- les cgroups.
+Il configure ensuite le système de fichiers et démarre le processus du conteneur.
+C'est à ce niveau que le conteneur cesse d'être simplement un objet géré par Docker et devient concrètement un processus Linux. Le kernel applique alors les mécanismes d'isolation du processus.
 
-C'est donc à ce niveau que les mécanismes étudiés dans le chapitre précédent sont réellement mis en place.
+<img src=images/runc.jpg>
 
 ### 5.6. Linux Kernel
 
