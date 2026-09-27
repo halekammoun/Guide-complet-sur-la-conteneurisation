@@ -365,6 +365,7 @@ Une façon simple de retenir leur rôle est :
 
 Les conteneurs utilisent plusieurs types de namespaces.
 
+<img src=images/namespaces.jpg>
 
 ## 8.1. PID Namespace
 
