@@ -35,8 +35,9 @@ Un **container runtime** est un logiciel responsable de la **gestion et/ou de l'
 
 Le terme est assez général. Dans l'écosystème moderne, on rencontre notamment deux niveaux :
 
-<img src="images/runtime.png" alt="runtime">
-
+<p align="center">
+<img src="images/runtime.png" alt="runtime" width=500>
+</p>
 
 L'idée générale est :
 
@@ -114,8 +115,9 @@ Derrière cette commande, plusieurs opérations doivent être réalisées :
 8. Configurer les ressources
 9. Lancer le processus
 ```
-<img src="images/container-runtime.png" alt="Architecture du kernel Linux">
-
+<p align="center">
+<img src="images/container-runtime.png" alt="Architecture du kernel Linux" width=500>
+</p>
 Il est donc logique de séparer les responsabilités :
 
 ```text
