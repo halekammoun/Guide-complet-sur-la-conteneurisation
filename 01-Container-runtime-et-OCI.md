@@ -1,6 +1,6 @@
 # 01 — Container Runtime, OCI, containerd et runc
 
-> **Objectif :** comprendre le rôle d'un container runtime et situer Docker, containerd, CRI-O, OCI et runc dans la chaîne d'exécution d'un conteneur.
+> **Objectif :** comprendre le rôle d'un container runtime.
 
 > **Idée clé :** le chapitre précédent expliquait **comment Linux isole un processus** ; ce chapitre explique **quels composants utilisent ces mécanismes pour exécuter et gérer des conteneurs**.
 
@@ -66,6 +66,7 @@ CRI-O
 
 > **High-level runtime = gérer et orchestrer le cycle de vie du conteneur.**
 
+## 3.2.1 Containerd 
 ---
 
 ## 3.2. Low-Level Runtime
@@ -91,8 +92,6 @@ seccomp
 ```
 
 > **Low-level runtime = créer exécuter et isoler le processus du conteneur.**
-
----
 
 # 4. Pourquoi cette séparation ?
 
@@ -130,10 +129,273 @@ Linux Kernel
 ```
 
 Cette séparation nous permet ensuite de comprendre pourquoi `containerd` et `runc` par exemple ne jouent pas exactement le même rôle.
+# 5. Architecture Docker
+
+Docker repose sur plusieurs composants qui collaborent pour transformer une commande comme :
+
+```bash
+docker run nginx
+```
+
+en un conteneur réellement exécuté par le **kernel Linux**.
+
+L'architecture simplifiée est la suivante :
+
+<img src=images/arch-docker.jpg >
+
+Chaque composant possède une responsabilité différente.
+
+### Docker CLI
+
+Le **Docker CLI** est l'interface utilisée par l'utilisateur :
+
+```bash
+docker run
+docker ps
+docker build
+docker pull
+docker stop
+```
+
+Il envoie les demandes au daemon Docker.
+
+### dockerd
+
+`dockerd` est le **daemon Docker**.
+
+Il constitue le point central de gestion de Docker et reçoit les requêtes provenant du Docker CLI.
+
+Il coordonne notamment :
+
+- les conteneurs ;
+- les images ;
+- les réseaux ;
+- les volumes ;
+- les opérations demandées par l'utilisateur.
+
+> **À retenir : `dockerd` est le daemon Docker, ce n'est pas le runtime OCI qui crée directement le processus du conteneur.**
+
+### containerd
+
+`containerd` est un composant spécialisé dans la **gestion du cycle de vie des conteneurs**.
+
+Il prend en charge notamment :
+
+- la gestion des images ;
+- la création et la gestion des conteneurs ;
+- la gestion des tâches (processus des conteneurs) ;
+- la communication avec le runtime OCI.
+
+Il délègue ensuite l'exécution bas niveau à un runtime OCI tel que `runc`.
+
+### containerd-shim
+
+Le `containerd-shim-runc-v2` sert d'intermédiaire entre `containerd` et le processus du conteneur.
+
+Il permet notamment à `containerd` de gérer les conteneurs et leurs processus sans avoir à rester directement attaché à chaque processus exécuté.
+
+On peut donc simplifier son rôle comme :
+
+```text
+containerd
+    │
+    ▼
+containerd-shim
+    │
+    ▼
+runc
+```
+
+### runc
+
+`runc` est un **runtime OCI de bas niveau**.
+
+C'est lui qui utilise les mécanismes du système Linux pour créer et exécuter le processus du conteneur.
+
+Il configure notamment :
+
+- les namespaces ;
+- les cgroups ;
+- les mounts ;
+- le root filesystem ;
+- les capabilities ;
+- les paramètres de sécurité ;
+- le processus à exécuter.
+
+C'est donc à ce niveau que les mécanismes étudiés dans le chapitre précédent sont réellement mis en place.
+
+### Linux Kernel
+
+Le **kernel Linux** fournit les mécanismes fondamentaux utilisés pour isoler et contrôler les processus :
+
+```text
+Namespaces
+cgroups
+mounts
+capabilities
+seccomp
+...
+```
+
+Le kernel est donc la couche qui fournit les primitives nécessaires à l'exécution des conteneurs.
+
+> **À retenir :**
+>
+> **Docker CLI** → interface utilisateur  
+> **dockerd** → daemon Docker  
+> **containerd** → gestion du cycle de vie des conteneurs  
+> **containerd-shim** → intermédiaire entre containerd et le processus  
+> **runc** → exécution bas niveau selon OCI  
+> **Linux Kernel** → isolation et contrôle des ressources
 
 ---
 
-# 5. OCI — Open Container Initiative
+# 6. Architecture Podman
+
+Podman utilise également des **OCI runtimes** comme `runc` ou `crun`, mais son architecture présente une différence importante par rapport à Docker :
+
+> **Podman est daemonless : il n'utilise pas de daemon central équivalent à `dockerd`.**
+
+Une représentation simplifiée est :
+
+<img src=images/arch-podman.png>
+
+### Podman CLI
+
+Le **Podman CLI** est l'interface utilisée par l'utilisateur :
+
+```bash
+podman run
+podman ps
+podman build
+podman pull
+podman stop
+```
+
+Contrairement à Docker, la commande `podman` ne nécessite pas de communiquer avec un daemon central permanent.
+
+### Podman
+
+Podman assure directement la gestion des opérations liées aux conteneurs.
+
+Il peut notamment :
+
+- créer des conteneurs ;
+- gérer leur cycle de vie ;
+- gérer les images ;
+- gérer les pods ;
+- préparer l'environnement nécessaire à l'exécution ;
+- invoquer un runtime OCI.
+
+On peut donc représenter simplement :
+
+```text
+podman
+   │
+   ▼
+OCI Runtime
+   │
+   ▼
+Linux Kernel
+```
+
+### conmon
+
+**conmon** est utilisé par Podman pour surveiller les processus des conteneurs.
+
+Il peut notamment :
+
+- surveiller le processus du conteneur ;
+- gérer les entrées/sorties (I/O) ;
+- conserver les informations nécessaires au suivi du conteneur ;
+- permettre au processus du conteneur de continuer indépendamment de la commande Podman qui l'a lancé.
+
+On peut donc retenir :
+
+```text
+Podman
+   │
+   ▼
+conmon
+   │
+   ▼
+runc / crun
+   │
+   ▼
+Linux Kernel
+```
+
+### runc ou crun
+
+Podman peut utiliser différents **OCI runtimes**.
+
+Par exemple :
+
+```text
+runc
+crun
+```
+
+Ces runtimes ont pour rôle d'exécuter réellement le processus du conteneur en utilisant les mécanismes du kernel Linux.
+
+### Rootless
+
+Une caractéristique importante de Podman est sa capacité à fonctionner en **rootless**.
+
+Un utilisateur peut donc exécuter des conteneurs sans nécessairement disposer des privilèges `root`.
+
+Conceptuellement :
+
+```text
+Utilisateur
+     │
+     ▼
+  Podman
+     │
+     ▼
+OCI Runtime
+     │
+     ▼
+Linux Kernel
+```
+
+Cela permet notamment de réduire la dépendance à un daemon privilégié central.
+
+
+> **À retenir :**
+>
+> Docker repose sur un **daemon central (`dockerd`)**, tandis que Podman fonctionne selon une architecture **daemonless**.
+>
+> Les deux peuvent utiliser un **OCI runtime** comme `runc` pour exécuter les conteneurs.
+
+---
+
+# 7. Différence entre Docker et Podman
+
+Docker et Podman fournissent tous les deux des outils permettant de créer, exécuter et gérer des conteneurs.
+
+La principale différence étudiée dans ce chapitre concerne **leur architecture et leur mode de fonctionnement**.
+
+| Élément | Docker | Podman |
+|---|---|---|
+| Interface CLI | `docker` | `podman` |
+| Daemon central | `dockerd` | Pas de daemon central |
+| Gestion des conteneurs | `dockerd` + `containerd` | Podman |
+| Runtime OCI | `runc` | `runc` ou `crun` |
+| Shim | `containerd-shim` | `conmon` |
+| Mode rootless | Possible | Pris en charge nativement |
+
+
+> **En résumé :**
+>
+> **Docker** utilise une architecture basée sur un daemon central, avec `dockerd` et `containerd` qui coordonnent la gestion des conteneurs.
+>
+> **Podman** utilise une architecture daemonless : les commandes sont exécutées directement par Podman et les conteneurs peuvent être exécutés avec un runtime OCI comme `runc` ou `crun`.
+>
+> Dans les deux cas, l'exécution bas niveau repose finalement sur les mécanismes fournis par le **Linux Kernel**.
+
+---
+# 8. OCI — Open Container Initiative
 
 Maintenant qu'on comprend la notion de runtime, une autre question apparaît :
 
@@ -141,19 +403,23 @@ Maintenant qu'on comprend la notion de runtime, une autre question apparaît :
 
 C'est là qu'intervient l'**OCI**.
 
-## 5.1. Définition
+## 8.1. Définition
 
 **OCI (Open Container Initiative)** définit des **standards ouverts pour les images, les runtimes et la distribution des artefacts de conteneurs**.
 
 C'est un ensemble de **spécifications communes**.
 
-# 6. Les principales spécifications OCI
+<img src=images/oci.png width=200 >
+
+## 8.2. Les principales spécifications OCI
 
 Les trois spécifications principales à connaître sont :
 
+<img src=images/oci-standard.png>
+
 voir documentation officielle: https://specs.opencontainers.org/
 
-## 6.1. OCI Image Specification
+## 8.2.1. OCI Image Specification
 
 Elle définit le **format standard d'une image de conteneur**.
 
@@ -166,7 +432,7 @@ Image
  ├── Configuration
  └── Layers
 ```
-## 6.2. OCI Runtime Specification
+## 8.2.3. OCI Runtime Specification
 
 Elle définit le **modèle standard d'exécution d'un conteneur**.
 
@@ -188,7 +454,7 @@ crun
 youki
 ```
 
-## 6.3. OCI Distribution Specification
+## 8.2.4. OCI Distribution Specification
 
 Elle définit les règles permettant aux clients et aux registries d'échanger des artefacts OCI.
 
@@ -211,57 +477,9 @@ Distribution Specification → comment elle est distribuée
 
 Runtime Specification → comment elle est exécutée
 ```
-> **Docker fournit la plateforme, containerd gère le cycle de vie, runc exécute et Linux fournit les mécanismes d'isolation.**
 
-<img src="images/dockerd.png" alt="runtime">
 
-> **Attention : OCI n'est pas une couche d'exécution placée entre containerd et runc. Il définit les standards auxquels les composants concernés se conforment.**
-
-#### Inspection rapide de containerd 
-
-Cette partie permet uniquement d'observer les composants présents sur une machine.
-
-Elle ne constitue pas le TP de construction manuelle.
-
-1. Lancer un conteneur de test
-
-```bash
-docker run -d --name runtime-lab nginx
-```
-
-2. Trouver le PID
-
-```bash
-docker inspect --format '{{.State.Pid}}' runtime-lab
-```
-3. Observer les namespaces
-
-```bash
-ls -l /proc/"$PID"/ns/
-```
-
-4. Vérifier containerd
-
-```bash
-containerd --version
-systemctl status containerd
-```
-
-5. Vérifier runc
-
-```bash
-runc --version
-which runc
-```
-
-6. Observer le shim
-
-```bash
-ps aux | grep containerd-shim
-```
----
-
-# 7. Ce qu'il faut retenir
+# Ce qu'il faut retenir
 
 ### Container Runtime
 
@@ -319,7 +537,7 @@ Quel est le rôle de l'**OCI (Open Container Initiative)** ?
 
 ### Question 6
 
-Quelles sont les trois principales spécifications OCI présentées dans ce chapitre ?
+Quelles sont les trois principales spécifications OCI ?
 
 ### Question 7
 
@@ -327,4 +545,4 @@ Quelle est la différence entre `containerd` et `runc` ?
 
 ### Question 8
 
-Quelle est la relation entre l'OCI et les runtimes OCI ?
+Quelle est la différence entre `docker` et `podman` ?
