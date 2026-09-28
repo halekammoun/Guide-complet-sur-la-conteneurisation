@@ -46,7 +46,7 @@ High-Level: Gestion du conteneur
 Low-Level: Exécution du processus
 ```
 
-# 3. High-Level et Low-Level Runtime
+# 3. Types de Runtime
 
 ## 3.1. High-Level Runtime
 
