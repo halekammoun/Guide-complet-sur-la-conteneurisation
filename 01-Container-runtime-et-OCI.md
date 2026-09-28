@@ -67,9 +67,6 @@ CRI-O
 
 > **High-level runtime = gérer et orchestrer le cycle de vie du conteneur.**
 
-## 3.2.1 Containerd 
----
-
 ## 3.2. Low-Level Runtime
 
 Un **low-level container runtime** est beaucoup plus proche du système d'exploitation et s'occupe de créer et exécuter le processus du conteneur.
@@ -165,7 +162,7 @@ il transforme votre commande en une requête API et l'envoie via :
 /var/run/docker.sock
 ```
 
-au Docker daemon.
+au Docker daemon.  
 Le CLI lui-même ne construit pas les images, ne télécharge pas les layers et ne démarre pas les conteneurs. Il se contente de transmettre les requêtes.
 Le véritable travail est effectué par les composants situés derrière le CLI.
 Cette séparation est importante car le CLI et le daemon n'ont même pas besoin d'être exécutés sur la même machine. Docker peut exposer son API à distance, permettant ainsi à des outils externes et à des systèmes d'automatisation de communiquer directement avec le daemon.
