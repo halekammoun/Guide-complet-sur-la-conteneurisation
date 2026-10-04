@@ -3,7 +3,8 @@
 > **Objectif :** apprendre à gérer des conteneurs avec Podman et être capable de réaliser des tâches pratiques de type: lancement de conteneurs, port mapping, volumes, copie de fichiers, variables d'environnement, construction d'images avec `Containerfile`, réseaux et déploiements multi-conteneurs.
 
 ---
-
+<img src=images/podman-logo.png>
+---
 ## 0. Introduction à Podman
 
 Podman utilise une interface de commandes très proche de Docker :
