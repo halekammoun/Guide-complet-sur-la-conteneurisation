@@ -691,3 +691,5 @@ podman network rm
 18. Comment entrer dans un conteneur en cours d'exécution ?
 19. Quelle est la différence entre `podman stop` et `podman rm` ?
 20. Quelle est la différence entre une image et un conteneur ?
+
+[Cliquez ici pour ouvrir le lab](TPs/TP-02.md##-TP2:-Gérer-le-conteneurs-avec-podman)
