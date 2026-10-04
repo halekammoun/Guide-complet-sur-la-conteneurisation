@@ -1,9 +1,10 @@
 # Chapitre 05 — Gérer les conteneurs avec Podman
 
 > **Objectif :** apprendre à gérer des conteneurs avec Podman et être capable de réaliser des tâches pratiques de type: lancement de conteneurs, port mapping, volumes, copie de fichiers, variables d'environnement, construction d'images avec `Containerfile`, réseaux et déploiements multi-conteneurs.
+<p align="center">
 
-<img src=images/podman-logo.png width=300 align=center>
-
+<img src=images/podman-logo.png width=300>
+</p>
 ---
 ## 0. Introduction à Podman
 
