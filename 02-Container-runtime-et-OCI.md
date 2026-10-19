@@ -241,6 +241,8 @@ Le kernel est donc la couche qui fournit les primitives nécessaires à l'exécu
 > **runc** → exécution bas niveau selon OCI  
 > **Linux Kernel** → isolation et contrôle des ressources
 
+
+[Cliquez ici pour ouvrir le lab](TPs/TP-01.md#lab-2-guidé-déployer-un-conteneur-directement-avec-containerd)
 ---
 
 # 6. Architecture Podman
@@ -544,5 +546,3 @@ Quelle est la différence entre `containerd` et `runc` ?
 Quelle est la différence entre `docker` et `podman` ?
 
 L'objectif du lab suivant sera d'explorer progressivement le fonctionnement de **containerd**, de la gestion des images jusqu'au lancement et à l'inspection d'un conteneur, afin de comprendre les composants qui interviennent réellement sous le capot.
-
-[Cliquez ici pour ouvrir le lab](TPs/TP-01.md#lab-2-guidé-déployer-un-conteneur-directement-avec-containerd)

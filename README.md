@@ -48,5 +48,5 @@ Ce guide suppose des connaissances de base en :
 - [Séance 3 - Container Runtime, OCI, containerd et runc](02-Container-runtime-et-OCI.md) `inclu dans l'examen`
 - [Séance 3 - Gérer les conteneurs avec Containerd](TPs/TP-02.md) `inclu dans l'examen`
 - [Séance 4 - Gérer les conteneurs avec Podman Cours](03-podman.md) et [TP](TPs/TP-02.md) `inclu dans l'examen`
-- [Séance 5 - Gérer les conteneurs avec Docker](04-docker.md) et [Test](test.md) `inclu dans l'examen`
+- [Séance 5 - Gérer les conteneurs avec Docker](04-docker.md) et [Test](github.com/halekammoun/Test-Docker) `inclu dans l'examen`
 - [Séance 6 - Sécurisation des conteneurs & Registre privé](05-registry-and-security.md) `inclu dans l'examen`
