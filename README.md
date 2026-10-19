@@ -43,9 +43,10 @@ Ce guide suppose des connaissances de base en :
 ---
 
 # 📖 Sommaire
-- [Chapitre 00 - Introduction au conteneurisation & Construire un conteneur manuellement](00-linux-foundations.md)
-- [Chapitre 01 - OCI & runtimes](01-Container-runtime-et-OCI.md)
-- [Chapitre 02 - Réseaux des conteneurs & CNI](02-container-networking-cni.md)
-- [Chapitre 03 - Docker](04-docker-and-podman.md)
-- [Chapitre 04 - Podman](05-docker-compose.md)
-- [Chapitre 05 - Sécurisation des conteneurs & Registre privé](03-registry-and-security.md)
+- [Séance 1 - Fondations Linux et Isolation](01-linux-foundations.md) `inclu dans l'examen`
+- [Séance 2 - Construire un conteneur manuellement](TPs/TP-01.md)
+- [Séance 3 - Container Runtime, OCI, containerd et runc](02-Container-runtime-et-OCI.md) `inclu dans l'examen`
+- [Séance 3 - Gérer les conteneurs avec Containerd](TPs/TP-02.md) `inclu dans l'examen`
+- [Séance 4 - Gérer les conteneurs avec Podman Cours](03-podman.md) et [TP](TPs/TP-02.md) `inclu dans l'examen`
+- [Séance 5 - Gérer les conteneurs avec Docker](04-docker.md) et [Test](test.md) `inclu dans l'examen`
+- [Séance 6 - Sécurisation des conteneurs & Registre privé](05-registry-and-security.md) `inclu dans l'examen`
