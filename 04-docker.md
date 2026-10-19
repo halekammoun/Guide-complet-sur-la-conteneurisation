@@ -31,7 +31,7 @@ Dans ce chapitre, nous nous concentrons sur l'utilisation pratique de Docker et 
 
 ---
 
-# 1. Construire une image avec un `Dockerfile`
+## 1. Construire une image avec un `Dockerfile`
 
 | Élément | Docker | Podman |
 |---|---|---|
@@ -43,7 +43,7 @@ Dans ce chapitre, nous nous concentrons sur l'utilisation pratique de Docker et 
 
 > **À retenir :** Docker utilise `Dockerfile` par convention, tandis que Podman utilise `Containerfile`. Les deux outils acceptent les deux noms et utilisent essentiellement la même syntaxe de construction.
 
-## 1.1 Différence entre `CMD` et `ENTRYPOINT`
+### 1.1 Différence entre `CMD` et `ENTRYPOINT`
 
 Ces deux instructions déterminent ce qui sera exécuté lorsque l'on crée un conteneur à partir d'une image.
 
@@ -52,7 +52,7 @@ La différence essentielle est la suivante :
 - `CMD` définit une commande par défaut ou des arguments par défaut.
 - `ENTRYPOINT` définit le programme principal que le conteneur doit exécuter.
 
-### 1.1.1 Utiliser `CMD` seul
+#### 1.1.1 Utiliser `CMD` seul
 
 Exemple :
 
@@ -94,7 +94,7 @@ Hello Podman
 
 Ici, `CMD` est adapté parce que l'utilisateur peut facilement remplacer la commande lors du lancement.
 
-### 1.1.2 Utiliser `ENTRYPOINT` seul
+#### 1.1.2 Utiliser `ENTRYPOINT` seul
 
 Exemple :
 
@@ -136,7 +136,7 @@ Résultat :
 Hello Students
 ```
 
-## 1.1.3 Utiliser `ENTRYPOINT` et `CMD` ensemble
+### 1.1.3 Utiliser `ENTRYPOINT` et `CMD` ensemble
 
 C'est un modèle très utile pour créer une image qui se comporte comme un outil exécutable.
 
@@ -184,7 +184,7 @@ Dans cet exemple :
 - `CMD` fournit l'argument par défaut.
 - Les arguments de `docker run` remplacent les arguments définis par `CMD`, sans supprimer l'`ENTRYPOINT` au format exec.
 
-## 1.1.4 Comparaison
+### 1.1.4 Comparaison
 
 | Situation | Comportement |
 |---|---|
@@ -193,9 +193,9 @@ Dans cet exemple :
 | `ENTRYPOINT` + `CMD` | Programme principal fixe avec arguments par défaut modifiables |
 
 
-# 2. Comprendre les layers d'une image Docker
+## 2. Comprendre les layers d'une image Docker
 
-## 2.1 Qu'est-ce qu'un layer ?
+### 2.1 Qu'est-ce qu'un layer ?
 
 Une image Docker est constituée de plusieurs couches, appelées *layers*.
 
@@ -235,7 +235,7 @@ Ce schéma représente les étapes de construction, et non une correspondance ex
 
 Les instructions comme `RUN`, `COPY` et `ADD` créent normalement des couches de système de fichiers. D'autres instructions, telles que `CMD`, `ENV` et `WORKDIR`, modifient la configuration de l'image sans nécessairement créer une nouvelle couche de fichiers.
 
-## 2.2 Pourquoi utiliser des layers ?
+### 2.2 Pourquoi utiliser des layers ?
 
 Les layers apportent plusieurs avantages :
 
@@ -246,7 +246,7 @@ Les layers apportent plusieurs avantages :
 
 Par exemple, si plusieurs images utilisent `alpine:3.22`, elles peuvent partager les couches de cette image de base.
 
-## 2.3 Comment les layers sont-ils stockés ?
+### 2.3 Comment les layers sont-ils stockés ?
 
 Docker utilise **containerd** pour gérer notamment les images et les conteneurs.
 
@@ -278,9 +278,9 @@ docker image history custom-nginx:1.0
 > **À retenir :** les blobs stockent le contenu des couches, tandis que les snapshots permettent de les utiliser comme un système de fichiers. `docker image history` affiche l'historique de l'image, pas directement les blobs physiques.
 
 
-# 3. Comprendre le cache de build
+## 3. Comprendre le cache de build
 
-## 3.1 Qu'est-ce que le cache ?
+### 3.1 Qu'est-ce que le cache ?
 
 Lorsque Docker construit une image, il examine les instructions du `Dockerfile` dans l'ordre.
 
@@ -319,7 +319,7 @@ Docker peut réutiliser les résultats précédents.
 Dans la sortie du build, on peut notamment voir des indications telles que `CACHED` lorsque BuildKit réutilise une étape.
 > **Remarque :** BuildKit est le moteur de construction utilisé par Docker pour construire des images.
 
-## 3.3 Pourquoi utiliser `--no-cache` ?
+### 3.3 Pourquoi utiliser `--no-cache` ?
 
 L'option `--no-cache` demande à Docker de ne pas réutiliser le cache des étapes de construction.
 
@@ -335,7 +335,7 @@ Elle est utile notamment lorsque l'on veut :
 - effectuer un build de diagnostic.
 
 
-## 3.4 Comment optimiser le cache ?
+### 3.4 Comment optimiser le cache ?
 
 Il est préférable de placer les instructions qui changent rarement avant celles qui changent fréquemment.
 
@@ -375,7 +375,7 @@ Pour éviter d'envoyer des fichiers inutiles dans le contexte de build, ajouter 
 Cela réduit la quantité de données envoyées au moteur de construction et évite d'inclure inutilement certains fichiers.
 
 --- 
-# 4. le build Multi-stage
+## 4. le build Multi-stage
 Le Multi-Stage Build est une technique Docker qui permet d'utiliser plusieurs étapes dans un même Dockerfile. On prépare l'application dans une première étape, puis on crée une image finale qui contient uniquement les éléments nécessaires à son exécution.
 ```bash
 # Étape 1 : préparer les dépendances
@@ -395,19 +395,19 @@ COPY app.py .
 CMD ["python", "app.py"]
 ```
 
-#### Comment ça fonctionne ?
+##### Comment ça fonctionne ?
 `Étape 1: Builder`
 L'image python:3.12 sert à installer les dépendances définies dans requirements.txt. Elles sont placées dans le répertoire /install.
 `Étape 2: Image finale`
 L'image python:3.12-slim sert à exécuter l'application. La commande COPY --from=builder récupère les dépendances depuis la première étape, puis COPY app.py . ajoute le code de l'application.
 
-#### Pourquoi utiliser cette technique ?
+##### Pourquoi utiliser cette technique ?
 Le multi-stage build permet de séparer la préparation de l'application de son exécution et d'éviter d'inclure dans l'image finale des fichiers ou des outils qui ne sont pas nécessaires.
 
 > **À retenir** : COPY --from=builder permet de copier uniquement les fichiers nécessaires depuis une étape précédente vers l'image finale.
 
 --- 
-# 5. Conclusion : comment optimiser alors une image Docker ?
+## 5. Conclusion : comment optimiser alors une image Docker ?
 
 Pour obtenir une image Docker légère, appliquez les bonnes pratiques suivantes :
 
@@ -426,7 +426,7 @@ Pour obtenir une image Docker légère, appliquez les bonnes pratiques suivantes
 
 **Objectif final :** construire une image Docker aussi légère que possible, sans supprimer les composants nécessaires, tout en conservant une application fonctionnelle et  maintenable.
 
-# 6. Questions de compréhension
+## 6. Questions de compréhension
 
 1. Quelle est la différence entre une image et un conteneur ?
 2. Quel est le rôle de `FROM` dans un Dockerfile ?
