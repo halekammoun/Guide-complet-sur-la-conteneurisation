@@ -45,7 +45,7 @@ Ce guide suppose des connaissances de base en :
 # 📖 Sommaire
 - [Fondations Linux et Isolation](01-linux-foundations.md) `inclu dans l'examen`
 - [Construire un conteneur manuellement](TPs/TP-01.md)
-- [Standards OCI, Runtime moderne et exécution avec containerd](02-Container-runtime-et-OCI.md) `inclu dans l'examen`
+- [Standards OCI, Runtime moderne et exécution avec containerd](02-Container-runtime-et-OCI.md) `inclu dans l'examen`  
   [Gérer les conteneurs avec Containerd](TPs/TP-02.md) `inclu dans l'examen`
 - [Réseau des conteneurs et CNI](empty)
 - [Registry et Sécurité des conteneurs](05-registry-and-security.md) 
