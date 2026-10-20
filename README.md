@@ -48,6 +48,6 @@ Ce guide suppose des connaissances de base en :
 - [Standards OCI, Runtime moderne et exécution avec containerd](02-Container-runtime-et-OCI.md) `inclu dans l'examen`
   [Gérer les conteneurs avec Containerd](TPs/TP-02.md) `inclu dans l'examen`
 - [Réseau des conteneurs et CNI](empty)
-- [Registry et Sécurité des conteneurs](05-registry-and-security.md) `inclu dans l'examen`
-- [Gérer les conteneurs avec Podman Cours](03-podman.md) et [TP](TPs/TP-03.md) `inclu dans l'examen`
+- [Registry et Sécurité des conteneurs](05-registry-and-security.md) 
+- [Gérer les conteneurs avec Podman Cours](03-podman.md), [Guide nginx](guide_nginx.md) et [TP](TPs/TP-03.md) `inclu dans l'examen`
 - [Gérer les conteneurs avec Docker](04-docker.md) et [Test](https://github.com/halekammoun/Test-Docker/) `inclu dans l'examen`
