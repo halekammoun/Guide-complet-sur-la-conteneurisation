@@ -43,10 +43,11 @@ Ce guide suppose des connaissances de base en :
 ---
 
 # 📖 Sommaire
-- [Séance 1 - Fondations Linux et Isolation](01-linux-foundations.md) `inclu dans l'examen`
-- [Séance 2 - Construire un conteneur manuellement](TPs/TP-01.md)
-- [Séance 3 - Container Runtime, OCI, containerd et runc](02-Container-runtime-et-OCI.md) `inclu dans l'examen`
-- [Séance 3 - Gérer les conteneurs avec Containerd](TPs/TP-02.md) `inclu dans l'examen`
-- [Séance 4 - Gérer les conteneurs avec Podman Cours](03-podman.md) et [TP](TPs/TP-03.md) `inclu dans l'examen`
-- [Séance 5 - Gérer les conteneurs avec Docker](04-docker.md) et [Test](https://github.com/halekammoun/Test-Docker/) `inclu dans l'examen`
-- [Séance 6 - Sécurisation des conteneurs & Registre privé](05-registry-and-security.md) `inclu dans l'examen`
+- [Fondations Linux et Isolation](01-linux-foundations.md) `inclu dans l'examen`
+- [Construire un conteneur manuellement](TPs/TP-01.md)
+- [Standards OCI, Runtime moderne et exécution avec containerd](02-Container-runtime-et-OCI.md) `inclu dans l'examen`
+  [Gérer les conteneurs avec Containerd](TPs/TP-02.md) `inclu dans l'examen`
+- [Réseau des conteneurs et CNI](empty)
+- [Registry et Sécurité des conteneurs](05-registry-and-security.md) `inclu dans l'examen`
+- [Gérer les conteneurs avec Podman Cours](03-podman.md) et [TP](TPs/TP-03.md) `inclu dans l'examen`
+- [Gérer les conteneurs avec Docker](04-docker.md) et [Test](https://github.com/halekammoun/Test-Docker/) `inclu dans l'examen`
