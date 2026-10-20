@@ -10,7 +10,7 @@ Dans notre architecture, Nginx sert les fichiers statiques du frontend et route 
 
 ### Exemple d'architecture
 
-<src img=images/ng.png>
+<img src=images/ng.png>
 
 Les conteneurs doivent être connectés au même réseau Podman ou Docker pour que Nginx puisse joindre les backends en utilisant leurs noms.
 
