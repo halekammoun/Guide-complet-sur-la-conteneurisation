@@ -1,4 +1,4 @@
-# Chapitre 06 — Gérer les conteneurs avec Docker
+# 03 — Gérer les conteneurs avec Docker
 
 > **Objectif :** apprendre à gérer des conteneurs avec Docker, construire des images avec un `Dockerfile`, comprendre les layers et le cache de build, configurer les ports, les volumes, les variables d'environnement et les réseaux, et déployer des applications multi-conteneurs.
 
